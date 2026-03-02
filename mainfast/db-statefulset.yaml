@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgress
+  namespace: prod
+spec:
+  replicas: 3
+  serviceName: postgres-service
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      restartPolicy: Always            # Always, OnFailure, Never
+      containers:
+      - name: db
+        image: postgres:16
+        imagePullPolicy: IfNotPresent  # Always, IfNotPresent, Never
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: db-secret
+        - configMapRef:
+            name: db-config
+# -------
+        volumeMounts:
+        - name: postgress-pvc
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgress-pvc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]  # ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod
+      storageClassName: openebs-hostpath
+      resources:
+        requests:
+          storage: 2Gi
+
+

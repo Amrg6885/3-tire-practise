@@ -1,0 +1,13 @@
+Internet/User
+   |
+   |  (MetalLB External IP)
+   v
+frontend Service (LoadBalancer)  ---> frontend Pods
+   |
+   | (ClusterIP)
+   v
+backend Service (ClusterIP) ---> backend Pods
+   |
+   | (ClusterIP)
+   v
+postgres Service (ClusterIP) ---> postgres StatefulSet + PVC
